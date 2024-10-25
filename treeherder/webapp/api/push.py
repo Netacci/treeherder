@@ -152,12 +152,16 @@ class PushViewSet(viewsets.ViewSet):
             pushes = pushes.filter(id__in=id_in_list)
 
         author = filter_params.get("author")
-        if author:
-            if author.startswith("-"):
-                author = author[1::]
-                pushes = pushes.exclude(author=author)
-            else:
-                pushes = pushes.filter(author=author)
+        author_contains = filter_params.get("author_contains")
+        if author_contains:
+            pushes = pushes.filter(author__icontains=author_contains)
+        else:
+            if author:
+               if author.startswith("-"):
+                   author = author[1::]
+                   pushes = pushes.exclude(author__iexact=author)
+               else:
+                  pushes = pushes.filter(author__iexact=author)
 
         if filter_params.get("hide_reviewbot_pushes") == "true":
             pushes = pushes.exclude(author="reviewbot")
