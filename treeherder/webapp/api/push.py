@@ -71,13 +71,13 @@ class PushViewSet(viewsets.ViewSet):
             pushes = pushes.filter(repository=repository)
 
         search_param = filter_params.get("search")
-        if search_param:      
+        if search_param:
             filtered_commits = Commit.objects.annotate(
                 search=SearchVector("revision", "author", "comments", config="english")
             ).filter(
                 search=SearchQuery(search_param, config="english")
             ).values_list("push_id", flat=True)
-        pushes = pushes.filter(id__in=filtered_commits)
+            pushes = pushes.filter(id__in=filtered_commits)
         for param, value in meta.items():
             if param == "fromchange":
                 revision_field = "revision__startswith" if len(value) < 40 else "revision"
